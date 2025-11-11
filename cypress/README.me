@@ -1,0 +1,146 @@
+# 🧪 QA Teste: Fluxo de Automação com IA / Cypress
+
+Este projeto demonstra um **fluxo completo de testes automatizados com Cypress** integrado a **inteligência artificial (Groq)** para **análise automática de bugs** e geração de **sugestões, tags e severidade**.  
+Os resultados dos testes (status `TRUE` ou `FALSE`) são armazenados no **Google Sheets**, permitindo acompanhamento em tempo real e integração com o fluxo da IA.
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- **Cypress (JavaScript)** → automação de testes de interface (UI)
+- **Groq AI (via HTTP + API Key)** → análise e categorização inteligente de bugs
+- **Google Sheets API** → armazenamento e monitoramento dos resultados dos testes
+- **Node.js** → execução do ambiente local
+- **N8N** → automação do fluxo de envio e retorno de dados
+
+---
+
+## ⚙️ Estrutura do Projeto
+
+/cypress
+├── e2e/
+│ └── testes.cy.js
+├── support/
+│ └── commands.js # Comandos customizados do Cypress
+├── fixtures/
+│ └── dados.json # Dados de exemplo para os testes
+cypress.config.js
+README.md
+---
+
+## 🧩 Comandos Personalizados
+
+### 🔐 Login Automático
+```js
+Cypress.Commands.add('login', (email, senha) => {
+  cy.get('a[href="/login"]').click()
+  cy.get('[data-qa="login-email"]').type(email)
+  cy.get('[data-qa="login-password"]').type(senha)
+  cy.get('[data-qa="login-button"]').click()
+})
+
+📧 Geração de E-mail Aleatório
+Cypress.Commands.add('gerarEmailAleatorio', () => {
+  const timestamp = new Date().getTime()
+  return `teste${timestamp}@example.com`
+})
+
+👤 Verificação de Login
+Cypress.Commands.add('verificarLogin', (nomeUsuario) => {
+  cy.contains(`Logged in as ${nomeUsuario}`).should('be.visible')
+})
+
+🚪 Logout
+Cypress.Commands.add('logout', () => {
+  cy.get('a[href="/logout"]').click()
+  cy.url().should('include', '/login')
+})
+
+🛒 Limpar Carrinho
+Cypress.Commands.add('limparCarrinho', () => {
+  cy.get('a[href="/view_cart"]').click()
+  cy.get('body').then(($body) => {
+    if ($body.find('.cart_quantity_delete').length > 0) {
+      cy.get('.cart_quantity_delete').each(($el) => {
+        cy.wrap($el).click()
+        cy.wait(500)
+      })
+    }
+  })
+})
+
+
+📝 Preenchimento de Cadastro
+
+O comando preencherCadastro() automatiza todo o fluxo de cadastro de usuário, incluindo:
+
+Gênero (Mr./Mrs.)
+
+Data de nascimento
+
+Newsletter e ofertas
+
+Endereço completo
+
+
+🧠 Integração com IA Groq
+
+Quando um teste falha (FALSE), o sistema envia os dados do erro para a IA Groq, que:
+
+Analisa o tipo de bug
+
+Sugere correções automáticas
+
+Gera tags e severidade
+
+Classifica o erro por tipo e prioridade
+
+
+🖼️ Nos prints anexados, é possível ver a Groq gerando:
+
+Sugestões automáticas para bugs
+
+Tags descritivas (ex: “UI”, “Network”, “Timeout”)
+
+Nível de severidade
+
+Identificação de causa provável
+
+
+📊 Integração com Google Sheets
+
+Cada execução de teste gera automaticamente uma linha na planilha com os campos:
+
+timestamp	project	testName	status	duration	environment	browser
+
+Quando status = TRUE → o teste passou e é apenas registrado.
+
+Quando status = FALSE → os dados são enviados para a IA Groq para análise e retorno das sugestões.
+
+
+🧩 Exemplo de Fluxo
+
+O Cypress executa todos os testes automatizados.
+
+O resultado (TRUE/FALSE) é enviado para o Google Sheets.
+
+Se houver falha (FALSE):
+
+O erro é processado pela Groq.
+
+A IA gera sugestões, tags e severidade.
+
+Essas informações são registradas na planilha e exibidas no painel de acompanhamento.
+
+
+🖼️ Prints do Projeto
+
+Os prints anexados mostram:
+
+Execução dos testes no Cypress Runner.
+
+Resultados sincronizados com o Google Sheets.
+
+A análise da IA Groq com sugestões automáticas.
+
+Interface visual com status de cada teste e mensagens de bug.
